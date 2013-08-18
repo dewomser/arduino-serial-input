@@ -1,0 +1,65 @@
+/*
+ * 
+ * 2 Variablen werden nacheinander eingegeben und im EEPROM abgespeichert. + Ergebnistest.
+*/
+#include <EEPROM.h>
+
+int  stunde = 0;     // blink rate stored in this variable
+int  minuten = 0;
+int value;
+int endlos = 0;
+int ergebnis;
+int teilung;
+
+void setup()
+{
+Serial.begin(9600); // Initialize serial port to send and receive at 9600 baud
+ 
+Serial.println("du musst Stunden und Minuten angeben"); 
+stunde = EEPROM.read(0);
+Serial.println(stunde);
+minuten = EEPROM.read(1);
+Serial.println(minuten);
+
+Serial.println("du musst Stunden angeben");
+stunde = zeiteingabe(stunde,0);
+Serial.println("du musst Minuten angeben"); 
+minuten = zeiteingabe(minuten,1);
+   } 
+  
+void loop()
+{
+Serial.print("Stunde= ");
+Serial.println(stunde);
+Serial.print("Minute= ");
+Serial.println(minuten);
+delay(2000); 
+}
+
+// Da kommt die Funktion für die Zeiteingabe
+
+int zeiteingabe (int zeit , int teilung)
+
+{
+while(endlos == 0)
+ {
+if( Serial.available())
+   {
+    char ch = Serial.read();
+    if(ch >= '0' && ch <= '9') // is this an ascii digit between 0 and 9?
+    {
+       value = (value * 10) + (ch - '0'); // yes, accumulate the value
+    }
+    else if (ch == 10)  // is the character the newline character
+    {
+       zeit = value;  // set blinkrate to the accumulated value
+       Serial.println(zeit);
+       EEPROM.write(teilung, zeit);
+       ergebnis=zeit;
+       value = 0; // reset val to 0 ready for the next sequence of digits
+       break;
+    }
+  }
+ }
+return ergebnis;
+}
